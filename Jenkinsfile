@@ -4,14 +4,14 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git'
+                git 'https://github.com/SRCEM-AIML/C60_Yash-Rahangdale_Assignment2.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t YOUR_DOCKER_HUB_USERNAME/studentproject .'
+                    sh 'docker build -t yashr22/studentproject .'
                 }
             }
         }
@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
-                        sh 'docker push YOUR_DOCKER_HUB_USERNAME/studentproject'
+                        sh 'docker push yashr22/studentproject'
                     }
                 }
             }
@@ -29,7 +29,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker run -d -p 8000:8000 YOUR_DOCKER_HUB_USERNAME/studentproject'
+                    sh 'docker run -d -p 8000:8000 yashr22/studentproject'
                 }
             }
         }
