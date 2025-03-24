@@ -1,17 +1,21 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'yashr22/studentproject'
+    }
+
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/SRCEM-AIML/C60_Yash-Rahangdale_Assignment2.git'
+                git branch: 'main', url: 'https://github.com/SRCEM-AIML/C60_Yash-Rahangdale_Assignment2.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t yashr22/studentproject .'
+                    sh 'docker build -t $DOCKER_IMAGE .'
                 }
             }
         }
@@ -19,8 +23,8 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
-                        sh 'docker push yashr22/studentproject'
+                    withDockerRegistry([credentialsId: 'docker-hub-credentials', url: 'https://index.docker.io/v1/']) {
+                        sh 'docker push $DOCKER_IMAGE'
                     }
                 }
             }
@@ -29,7 +33,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker run -d -p 8000:8000 yashr22/studentproject'
+                    // Stop any running container with the same name
+                    sh 'docker stop studentproject || true && docker rm studentproject || true'
+
+                    // Run the new container
+                    sh 'docker run -d --name studentproject -p 8000:8000 $DOCKER_IMAGE'
                 }
             }
         }
